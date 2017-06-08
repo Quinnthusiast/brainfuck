@@ -47,12 +47,15 @@ public class Brainfuck implements Runnable
                 switch (opcode)
                 {
                     case GET:
-                        cells[ptr] = (char) input.read();
+                        int in = input.read();
+                        if (in != -1)
+                        {
+                            cells[ptr] = (char) in;
+                        }
                         break;
 
                     case PUT:
                         output.write(cells[ptr]);
-                        output.flush();
                         break;
 
                     case LEFT: // if pointing to zero, wrap around
@@ -125,6 +128,8 @@ public class Brainfuck implements Runnable
 
                 ip++; // increment the ip
             }
+            
+            output.flush(); // make sure everything is written to stdout
         }
         catch (IOException e)
         {
