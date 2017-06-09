@@ -2,6 +2,7 @@ package com.github.quinnthusiast.brainfuck;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.*;
 
 /**
  * Brainfuck interpreter, licensed under the MIT license
@@ -24,6 +25,8 @@ public class Brainfuck implements Runnable
     private final OutputStreamWriter output;
     private final String             program;
 
+    private final AtomicBoolean lock = new AtomicBoolean(false);
+    
     private final char[]         cells = new char[CELLS];
     private final Deque<Integer> stack = new ArrayDeque<>();
     private int                  ptr;
@@ -38,6 +41,11 @@ public class Brainfuck implements Runnable
     @Override
     public void run()
     {
+        if (lock.getAndSet(true))
+        {
+            throw new RuntimeException("Brainfuck instances may not be re-used!");
+        }
+        
         try
         {
             int ip = 0;
